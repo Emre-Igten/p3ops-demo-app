@@ -1,0 +1,8 @@
+- name: alma
+  box: bento/almalinux-9
+  ip: 192.168.56.3
+
+- name: control
+  ip: 192.168.56.2
+  box: bento/almalinux-9
+  

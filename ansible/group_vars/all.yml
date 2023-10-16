@@ -1,0 +1,24 @@
+# group_vars/all.yml
+# Variables visible to all nodes
+---
+rhbase_repositories:
+  - epel-release
+rhbase_install_packages:
+  - bash-completion
+  - vim-enhanced
+  - bind-utils
+  - php
+  - git
+  - nano
+  - setroubleshoot-server
+  - tree
+  - wget
+rhbase_users:
+  - name: emre
+    groups: 
+      - wheel
+    password: emre123
+    ssh_key: |
+      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBGwV7cdQmWa8/6nF0fGdk3x5UNXybNzs4zrRq4NTqJAdVxPYdvHTw9+6bdR17RUY6lznZXHtbRusatfYTYG74C3TejOyW9bRmXFZ4w/7s2S8bW9xTYR/2jtw1Ux6scFi7zQogVIEe7WM7LpR9JsxLcXM3cuqC9xTI9WcV4INMHXmQSYNrok7mOgyCHaUgzwS0slP86Ts6XXJ+U2Nt69CZmDoBt3HufTiTx8B6TnSHaTSKo8CsareKQ6RWn0t1QE7T4cWo+IGwlzP9fUqIRXCK/ir8nIskE3sev1FnvmpW/DMHTsjx/m/C5CCRCSyjEbHKtxY1gaVkKoKJqRxc9d3QBSL5QD0mPyGlL7WonRDtlS2tQ9aDNtPY36pNWRrMoaft70NFasmAYaHAuFltp25YD5O046hCoUh8UuFxvPzYfCCi70Es4X948F6qeVjP5rzYe+mJcVcTbw6HouutbQZIUaQgHJIm3z5ocEbl3b7592Cahz6Xv777/xWlwZ1fxjk= Gebruiker@DESKTOP-EMRE
+
+
