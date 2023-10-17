@@ -31,19 +31,42 @@
 
 - ansible-playbook -i inventory.yml sqltest.yml
 - op de vm  
-  -> docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=st3rkw8w00rd!" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
-  -> docker exec -it funny_golick /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P st3rkw8w00rd!  
-  ->   
-     CREATE DATABASE SportStore;  
-     GO;  
-     EXIT;
+  -> docker run --name SQLCONT -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=st3rkw8w00rd!" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+  -> docker exec -it SQLCONT /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P st3rkw8w00rd!  
 - zorg dat firewall alles toelaat 
   -> sudo firewall-cmd --zone=public --add-port=1433/tcp --permanent  
   -> sudo firewall-cmd --reload
 
-  Data Source=192.168.56.2;Initial Catalog=SportStore;User ID=sa;Password=***********
 
-  Data Source=host.docker.internal,1433;Initial Catalog=SportStore;User ID=sa;Password=st3rkw8w00rd!
+
+
+  ### andere zaken
+
+
+ - SQL en DOTNET cont in zelfde docker netwerk plaatsen  
+   -> docker network create netwerknaam  
+   -> docker network connect [netwerknaam] [container-naam-of-ID]
+ - docker cp src dotnet6-container:/app -> app naar docker dotner cont verplaatsen
+
+
+ ## applicatie bouwen in docker met dotnet
+
+
+- docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=st3rkw8w00rd!" -p 1433:1433 --name SQLServerContainer -d mcr.microsoft.com/mssql/server:2022-latest
+
+- docker run -e "DOTNET_ENVIRONMENT=Production" -e "DOTNET_ConnectionStrings__SqlDatabase=Server=SQLServerContainer,1433;Database=YourDatabase;User ID=sa;Password=st3rkw8w00rd!" -p 5000:80 --name DotnetContainer -d mcr.microsoft.com/dotnet/sdk:6.0
+- docker cp src DotnetContainer:
+- docker exec -it DotnetContainer /bin/bash 
+- cd src
+- dotnet restore src/Server/Server.csproj
+- dotnet build src/Server/Server.csproj
+- dotnet publish src/Server/Server.csproj -c Release -o publish
+  
+
+
+
+
+
 
 
 

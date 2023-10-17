@@ -1,0 +1,11 @@
+- name: Run .NET 6.0 in Docker
+  hosts: control
+  become: yes
+
+  tasks:
+    - name: Create a Docker container with .NET 6.0
+      docker_container:
+        name: dotnet6-container
+        image: mcr.microsoft.com/dotnet/sdk:6.0
+        command: sleep infinity  # Dit houdt de container actief
+      become: yes

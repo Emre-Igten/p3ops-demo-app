@@ -14,4 +14,6 @@
       yum:
         name: dotnet-sdk-6.0
         state: latest
+    - name: Docker for .NET
+    
  
