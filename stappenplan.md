@@ -39,22 +39,24 @@
 
 - ansible-playbook -i inventory.yml sqltest.yml
 - op de vm  
-  -> docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=testdb' -p 1433:1433 --name sql_
-server mcr.microsoft.com/mssql/server:latest
+  -> docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=st3rkw8w00rd!" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+  -> docker exec -it funny_golick /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P st3rkw8w00rd!  
+  ->   
+     CREATE DATABASE SportStore;  
+     GO;  
+     EXIT;
+- zorg dat firewall alles toelaat 
+  -> sudo firewall-cmd --zone=public --add-port=1433/tcp --permanent  
+  -> sudo firewall-cmd --reload
+
+  Data Source=192.168.56.2;Initial Catalog=SportStore;User ID=sa;Password=***********
+
+  Data Source=host.docker.internal,1433;Initial Catalog=SportStore;User ID=sa;Password=st3rkw8w00rd!
 
 
-### .NET RUNNEN MET TOOLS
 
 
-- demo app kopieren naar vm met 'scp -r ...'  
-- in de directory van de app  
-    -> git config --global user.email "emre.igten@student.hogent.be"  
-    -> git config --global user.name "Emre Igten"  
-    -> git init  
-    -> git add .    
-    -> git commit -m "Initial commit of sample application"  
-    -> git remote add origin git@github.com:Emre-Igten/p3ops-demo-app.git
-- 
+
 
 
 
