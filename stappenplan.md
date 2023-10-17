@@ -1,11 +1,3 @@
-- sudo dnf update  
-- sudo dnf install ansible  
-- kijken of je alma kan pingen met 'ansible -i inventory.yml alma -m ping'    
-  -> ansible-galaxy install -r requirements.yml  
-- als dit lukt 'ansible-playbook -i inventory.yml docker_net.yml' uitvoeren
-- ansible-playbook -i inventory.yml testdocker.yml
-- ansible-playbook -i inventory.yml jenkinsrunnen.yml
-
 
 ## TESTING
 
