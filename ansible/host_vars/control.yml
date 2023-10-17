@@ -1,0 +1,184 @@
+# group_vars/all.yml
+# Variables visible to all nodes
+---
+rhbase_repositories:
+  - epel-release
+rhbase_install_packages:
+  - bash-completion
+  - vim-enhanced
+  - bind-utils
+  - php
+  - git
+  - nano
+  - setroubleshoot-server
+  - tree
+  - wget
+  - docker
+
+rhbase_start_services_vars:
+  - docker
+  
+pip_install_packages:
+  - name: docker
+
+# Edition can be one of: 'ce' (Community Edition) or 'ee' (Enterprise Edition).
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "docker-{{ docker_edition }}-rootless-extras"
+  - "containerd.io"
+docker_packages_state: present
+
+# Service options.
+docker_service_manage: true
+docker_service_state: started
+docker_service_enabled: true
+docker_restart_handler_state: restarted
+
+# Docker Compose Plugin options.
+docker_install_compose_plugin: true
+docker_compose_package: docker-compose-plugin
+docker_compose_package_state: present
+
+# Docker Compose options.
+docker_install_compose: false
+docker_compose_version: "v2.11.1"
+docker_compose_arch: "{{ ansible_architecture }}"
+docker_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ docker_compose_arch }}"
+docker_compose_path: /usr/local/bin/docker-compose
+
+# Enable repo setup
+docker_add_repo: true
+
+# Docker repo URL.
+docker_repo_url: https://download.docker.com/linux
+
+# Used only for Debian/Ubuntu/Pop!_OS/Linux Mint. Switch 'stable' to 'nightly' if needed.
+docker_apt_release_channel: stable
+# docker_apt_ansible_distribution is a workaround for Ubuntu variants which can't be identified as such by Ansible,
+# and is only necessary until Docker officially supports them.
+docker_apt_ansible_distribution: "{{ 'ubuntu' if ansible_distribution in ['Pop!_OS', 'Linux Mint'] else ansible_distribution }}"
+docker_apt_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+docker_apt_repository: "deb [arch={{ docker_apt_arch }} signed-by=/etc/apt/trusted.gpg.d/docker.asc] {{ docker_repo_url }}/{{ docker_apt_ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
+docker_apt_ignore_key_error: true
+docker_apt_gpg_key: "{{ docker_repo_url }}/{{ docker_apt_ansible_distribution | lower }}/gpg"
+docker_apt_gpg_key_checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570"
+docker_apt_filename: "docker"
+
+# Used only for RedHat/CentOS/Fedora.
+docker_yum_repo_url: "{{ docker_repo_url }}/{{ (ansible_distribution == 'Fedora') | ternary('fedora','centos') }}/docker-{{ docker_edition }}.repo"
+docker_yum_repo_enable_nightly: '0'
+docker_yum_repo_enable_test: '0'
+docker_yum_gpg_key: "{{ docker_repo_url }}/centos/gpg"
+
+# A list of users who will be added to the docker group.
+docker_users: []
+
+# Docker daemon options as a dict
+docker_daemon_options: {}
+
+
+task:
+  - name: Services | Ensure specified services are running
+    service:
+      name: "{{ item }}"
+      enabled: true
+      state: started
+    with_items: "{{ rhbase_start_services_vars: }}"
+    tags:
+      - rhbase
+      - services
+
+  - name: Ensure old versions of Docker are not installed.
+    package:
+      name:
+        - docker
+        - docker-common
+        - docker-engine
+      state: absent
+
+  - name: Install Docker packages.
+    package:
+      name: "{{ docker_packages }}"
+      state: "{{ docker_packages_state }}"
+    notify: restart docker
+    ignore_errors: "{{ ansible_check_mode }}"
+    when: "ansible_version.full is version_compare('2.12', '<') or ansible_os_family not in ['RedHat', 'Debian']"
+
+  - name: Ensure /etc/docker/ directory exists.
+    file:
+      path: /etc/docker
+      state: directory
+      mode: 0755
+    when: docker_daemon_options.keys() | length > 0
+
+  - name: Ensure Docker is started and enabled at boot.
+    service:
+      name: docker
+      state: "{{ docker_service_state }}"
+      enabled: "{{ docker_service_enabled }}"
+    ignore_errors: "{{ ansible_check_mode }}"
+    when: docker_service_manage | bool
+
+  - name: Ensure SQL is started and enabled at boot.
+    service:
+      name: mssql-server
+      state: "{{ docker_service_state }}"
+      enabled: "{{ docker_service_enabled }}"
+    ignore_errors: "{{ ansible_check_mode }}"
+    when: docker_service_manage | bool
+
+  - name: Add Docker GPG key.
+    rpm_key:
+      key: "{{ docker_yum_gpg_key }}"
+      state: present
+    when: docker_add_repo | bool
+
+  - name: Add Docker repository.
+    get_url:
+      url: "{{ docker_yum_repo_url }}"
+      dest: '/etc/yum.repos.d/docker-{{ docker_edition }}.repo'
+      owner: root
+      group: root
+      mode: 0644
+    when: docker_add_repo | bool
+
+  - name: Configure Docker Nightly repo.
+    ini_file:
+      dest: '/etc/yum.repos.d/docker-{{ docker_edition }}.repo'
+      section: 'docker-{{ docker_edition }}-nightly'
+      option: enabled
+      value: '{{ docker_yum_repo_enable_nightly }}'
+      mode: 0644
+      no_extra_spaces: true
+    when: docker_add_repo | bool
+
+  - name: Configure Docker Test repo.
+    ini_file:
+      dest: '/etc/yum.repos.d/docker-{{ docker_edition }}.repo'
+      section: 'docker-{{ docker_edition }}-test'
+      option: enabled
+      value: '{{ docker_yum_repo_enable_test }}'
+      mode: 0644
+      no_extra_spaces: true
+    when: docker_add_repo | bool
+
+  - name: Configure containerd on RHEL 8.
+    block:
+      - name: Ensure runc is not installed.
+        package:
+          name: runc
+          state: absent
+
+  - name: Ensure container-selinux is installed.
+    package:
+      name: container-selinux
+      state: present
+
+  - name: Ensure containerd.io is installed.
+    package:
+      name: containerd.io
+      state: present
+    when: ansible_distribution_major_version | int == 8
+

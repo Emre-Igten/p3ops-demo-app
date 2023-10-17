@@ -1,0 +1,15 @@
+- name: Download and run Microsoft SQL Server as a Docker container
+  hosts: control  # Vervang 'your_host' door de naam van de host waarop je SQL Server wilt uitvoeren
+  become: yes
+  vars:
+    docker_service_state: started
+    docker_service_enabled: yes
+    docker_service_manage: yes
+  tasks:
+    - name: Pull SQL Server Docker image
+      docker_image:
+        name: mcr.microsoft.com/mssql/server:latest
+        state: present
+        source: pull
+
+       

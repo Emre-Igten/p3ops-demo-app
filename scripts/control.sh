@@ -46,5 +46,7 @@ dnf install --assumeyes \
 
 sudo --login --non-interactive --user=vagrant -- \
   pip install ansible
+  
 
-ansible-galaxy install -r requirements.yml
+
+

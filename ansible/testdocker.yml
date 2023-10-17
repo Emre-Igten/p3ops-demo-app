@@ -1,0 +1,5 @@
+- name: Configure alma 
+  roles: 
+    - geerlingguy.pip
+    - geerlingguy.docker
+  hosts: control 

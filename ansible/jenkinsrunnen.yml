@@ -1,0 +1,19 @@
+---
+- name: Run Jenkins in a Docker container
+  hosts: control
+  become: yes 
+
+  tasks:
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull Jenkins Docker image
+      docker_image:
+        name: jenkins/jenkins:lts
+        state: present
+        source: pull
+
+

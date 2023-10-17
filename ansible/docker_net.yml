@@ -1,10 +1,10 @@
 # site.yml
 ---
 
-- name: Configure alma 
-  hosts: alma         
-  roles:                 
+- name: Configure contol 
+  roles: 
     - bertvv.rh-base
+  hosts: control         
   tasks:
     - name: Installeer docker
       yum:
@@ -14,9 +14,4 @@
       yum:
         name: dotnet-sdk-6.0
         state: latest
-    - name: Installeer jenkins
-      yum:
-        name: jenkins
-        state: latest
-    
  

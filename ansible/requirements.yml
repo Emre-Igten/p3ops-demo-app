@@ -1,4 +1,6 @@
 ---
 roles:
   - name: bertvv.rh-base
+  - name: geerlingguy.pip
+  - name: geerlingguy.docker
   

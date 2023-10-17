@@ -6,6 +6,6 @@ servers:
     ansible_become: true
     ansible_python_interpreter: /usr/bin/python3
   hosts:
-    alma:
-      ansible_host: 192.168.56.3
-      ansible_ssh_password: vagrant
+    control:
+      ansible_host: 192.168.56.2
+      ansible_ssh_pass: vagrant
