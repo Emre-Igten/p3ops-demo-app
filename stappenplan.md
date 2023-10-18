@@ -8,9 +8,9 @@
 - vagrant ssh control
 - ansible-galaxy install -r requirements.yml
 - ssh key toevoegen aan known hosts   
-  -> in inventory.yml 'ansible_ssh_pass: vagrant' verwijderen en dan 'ansible-playbook -i inventory.yml docker_net.yml' uitvoeren  
+  -> in inventory.yml 'ansible_ssh_pass: vagrant' verwijderen en dan 'ansible-playbook -i inventory.yml docker.yml' uitvoeren  
   -> 'yes' bij fingerprint  
-  ->  'ansible_ssh_pass: vagrant' terug toevoegen in inventory en dan weer 'ansible-playbook -i inventory.yml docker_net.yml' uitvoeren  
+  ->  'ansible_ssh_pass: vagrant' terug toevoegen in inventory en dan weer 'ansible-playbook -i inventory.yml docker.yml' uitvoeren  
 - ansible-playbook -i inventory.yml testdocker.yml
 - ansible-playbook -i inventory.yml jenkinsrunnen.yml 
 - op de vm    
@@ -54,21 +54,53 @@
 
 - docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=st3rkw8w00rd!" -p 1433:1433 --name SQLServerContainer -d mcr.microsoft.com/mssql/server:2022-latest
 
-- docker run -e "DOTNET_ENVIRONMENT=Production" -e "DOTNET_ConnectionStrings__SqlDatabase=Server=SQLServerContainer,1433;Database=YourDatabase;User ID=sa;Password=st3rkw8w00rd!" -p 5000:80 --name DotnetContainer -d mcr.microsoft.com/dotnet/sdk:6.0
+- docker run -e "DOTNET_ENVIRONMENT=Production" -e "DOTNET_ConnectionStrings__SqlDatabase=Server=localhost;Database=SportStore;User Id=SA;Password=A!VeryComplex123Password;MultipleActiveResultSets=true" -p 5000:80 --name DotnetContainer -d mcr.microsoft.com/dotnet/sdk:6.0
 - docker cp src DotnetContainer:
 - docker exec -it DotnetContainer /bin/bash 
 - cd src
 - dotnet restore src/Server/Server.csproj
 - dotnet build src/Server/Server.csproj
 - dotnet publish src/Server/Server.csproj -c Release -o publish
+
+
+
+
+
+
+
+
+
+- sudo docker run -it \
+    -e "ACCEPT_EULA=Y" \
+    -e "SA_PASSWORD=A&VeryComplex123Password" \
+    -p 1433:1433 \
+    --name sql-server-container \
+    mcr.microsoft.com/mssql/server:2019-latest
+
+- 
   
 
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=A&VeryComplex123Password" -p 1433:1433 --name sql_server_container -d mcr.microsoft.com/mssql/server:2019-latest
+
+
+"SqlDatabase": "Server=localhost;Database=SportStore;User Id=SA;Password=A!VeryComplex123Password;MultipleActiveResultSets=true"
 
 
 
 
-
-
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "ConnectionStrings": {
+      "SqlDatabase": "Server=sql_server2022;Database=SportStore;User Id=SA;Password=A!VeryComplex123Password;MultipleActiveResultSets=true"
+    }
+  },
+  "AllowedHosts": "*"
+}
 
 
 
