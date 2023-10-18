@@ -23,7 +23,7 @@ This project is a very simple e-commerce website for sports products.
 4. Publish the server: `dotnet publish src/Server/Server.csproj -c Release -o publish`
 5. Make sure the following environment variables are set:
    - `DOTNET_ENVIRONMENT`: environment name, e.g. `Production`
-   - `DOTNET_ConnectionStrings__SqlDatabase`:"Server=192.168.56.2;Database=SportStore;User ID=sa;Password=st3rkw8woord!"
+   - `DOTNET_ConnectionStrings__SqlDatabase`:"Server=sql_server_container;Database=SportStore;User Id=SA;Password=A!VeryComplex123Password;MultipleActiveResultSets=true"
 6. Start the server: `dotnet publish/Server.dll`
 
  nano src/Server/appsettings.Development.json

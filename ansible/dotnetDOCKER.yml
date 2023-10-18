@@ -5,7 +5,9 @@
   tasks:
     - name: Create a Docker container with .NET 6.0
       docker_container:
-        name: dotnet6-container
+        name: dotnet6-containerTEST2
         image: mcr.microsoft.com/dotnet/sdk:6.0
         command: sleep infinity  # Dit houdt de container actief
+        published_ports:
+          - 5000:5000
       become: yes
