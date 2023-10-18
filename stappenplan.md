@@ -104,6 +104,22 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=A&VeryComplex123Password" -p 1433:
 
 
 
+docker run -d --name dotnetapp \
+--network proofofconcept \
+-p 80:80 \
+-v $(pwd)/publish:/app \
+mcr.microsoft.com/dotnet/sdk:6.0
+
+
+docker run -d --name dotnetapp \
+--network proofofconcept \
+-e DOTNET_ENVIRONMENT=Production \
+-e DOTNET_ConnectionStrings__SqlDatabase="Server=sql_server_container;Database=SportStore;User Id=SA;Password=A\!VeryComplex123Password;MultipleActiveResultSets=true" \
+-p 80:80 \
+-v $(pwd)/publish:/app \
+mcr.microsoft.com/dotnet/sdk:6.0
+
+
 
 
 
