@@ -46,6 +46,10 @@ dnf install --assumeyes \
 
 sudo --login --non-interactive --user=vagrant -- \
   pip install ansible
+
+
+ansible-galaxy install -r /vagrant/ansible/requirements.yml
+ansible-playbook -i /vagrant/ansible/invetory.yml /vagrant/ansible/controlvm.yml
   
 
 

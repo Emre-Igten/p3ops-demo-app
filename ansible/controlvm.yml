@@ -1,0 +1,42 @@
+- name: Configure contol 
+  roles: 
+    - bertvv.rh-base
+    - geerlingguy.pip
+    - geerlingguy.docker
+  hosts: control         
+  tasks:
+    
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    - name: Create a Docker container with .NET 6.0
+      docker_container:
+        name: dotnet6-container
+        image: mcr.microsoft.com/dotnet/sdk:6.0
+        command: sleep infinity  # Dit houdt de container actief
+        published_ports:
+          - 5000:5000
+      become: yes
+    - name: Create Docker container with SQL Server
+      docker_container:
+        name: sql-server-container
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: "AVeryComplex123Password"
+        published_ports:
+          - 1433:1433
+      become: yes
+    - name: Create Jenkins container
+      docker_container:
+        name: jenkins-container
+        image: jenkins/jenkins:lts
+        published_ports:
+          - 8080:8080
+          - 50000:50000
+        volumes:
+          - jenkins-date:/var/jenkins_home
+          - /var/run/docker.sock:/var/run/docker.sock
+      become: yes

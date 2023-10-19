@@ -13,10 +13,21 @@ rhbase_install_packages:
   - setroubleshoot-server
   - tree
   - wget
-  - docker
+  
 
-rhbase_start_services_vars:
-  - docker
+
+rhbase_firewall_allow_services:
+  - http
+  - https
+  - ssh
+  - dns
+  - dhcp
+  - dhcpv6-client
+  
+
+
+
+
   
 pip_install_packages:
   - name: docker
@@ -182,3 +193,58 @@ task:
       state: present
     when: ansible_distribution_major_version | int == 8
 
+  - name: Security | Make sure specified interfaces are added
+    firewalld:
+      interface: "{{ item }}"
+      zone: public
+      permanent: true
+      state: enabled
+    with_items: "{{ rhbase_firewall_interfaces }}"
+    notify:
+      - restart firewalld
+    tags:
+      - rhbase
+      - security
+
+  - name: Security | Make sure basic services can pass through firewall
+    firewalld:
+      service: "{{ item }}"
+      permanent: true
+      state: enabled
+    with_items:
+      - dhcpv6-client
+      - ssh
+      - http
+      - https
+      - dns
+      - dhcp
+      - docker
+    notify:
+      - restart firewalld
+    tags:
+      - rhbase
+      - security
+
+  - name: Security | Make sure user specified services can pass through firewall
+    firewalld:
+      service: "{{ item }}"
+      permanent: true
+      state: enabled
+    with_items: "{{ rhbase_firewall_allow_services }}"
+    notify:
+      - restart firewalld
+    tags:
+      - rhbase
+      - security
+
+  - name: Security | Make sure user specified ports can pass through firewall
+    firewalld:
+      port: "{{ item }}"
+      permanent: true
+      state: enabled
+    with_items: "{{ rhbase_firewall_allow_ports }}"
+    notify:
+      - restart firewalld
+    tags:
+      - rhbase
+      - security
