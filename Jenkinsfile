@@ -29,12 +29,13 @@ pipeline {
             steps {
                 script {
                     // Stop and remove previous container if it exists
-                docker.image('mcr.microsoft.com/dotnet/sdk:6.0').inside {
-                    sh 'docker stop sportstore-container || true'
-                    sh 'docker rm sportstore-container || true'
+                    docker.image('mcr.microsoft.com/dotnet/sdk:6.0').inside {
+                        sh 'docker stop sportstore-container || true'
+                        sh 'docker rm sportstore-container || true'
 
-                    // Run the existing SportStore .NET app container
-                    sh 'docker run -d --name sportstore-container -e DOTNET_ENVIRONMENT=Production -e DOTNET_ConnectionStrings__SqlDatabase="Server=sql-server-container;Database=SportStore;User Id=SA;Password=AVeryComplex123Password;MultipleActiveResultSets=true" dotnet6-container'
+                        // Run the existing SportStore .NET app container
+                        sh 'docker run -d --name sportstore-container -e DOTNET_ENVIRONMENT=Production -e DOTNET_ConnectionStrings__SqlDatabase="Server=sql-server-container;Database=SportStore;User Id=SA;Password=AVeryComplex123Password;MultipleActiveResultSets=true" dotnet6-container'
+                    }
                 }
             }
         }
