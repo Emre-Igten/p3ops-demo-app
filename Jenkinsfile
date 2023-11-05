@@ -5,7 +5,7 @@ pipeline {
 
         stage('Delete REPO') {
             steps {
-                sh 'if [ -d "/var/jenkins_home/workspace/Testing/" ]; then rm -Rf /var/jenkins_home/workspace/Testing/; fi'
+                sh 'if [ -d p3ops-demo-app ]; then rm -rf p3ops-demo-app; fi'
             }
         }        
         stage('Git Checkout') {
