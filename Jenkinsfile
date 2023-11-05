@@ -26,7 +26,7 @@ pipeline {
 
         stage('Build and Test in dotnet6-container') {
             steps {
-                        sh 'dotnet restore src/Server/Server.csproj'
+                        sh 'docker exec dotnet6-container dotnet restore src/Server/Server.csproj'
                         sh 'docker exec dotnet6-container dotnet build src/Server/Server.csproj'
                         sh 'docker exec dotnet6-container dotnet test tests/Domain.Tests/Domain.Tests.csproj'
                     
