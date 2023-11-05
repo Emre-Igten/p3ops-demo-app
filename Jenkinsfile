@@ -17,7 +17,7 @@ pipeline {
                     -v /var/run/docker.sock:/var/run/docker.sock \
                     -v \$(which docker):/usr/bin/docker \
                     -v \${PWD}:/workspace -w /workspace \
-                    -v /var/jenkins_home/workspace/p3ops-demo-app:/workspace/p3ops-demo-app \
+                    -v /var/jenkins_home/workspace/Testing/p3ops-demo-app:/workspace/p3ops-demo-app \
                     $DOTNET_IMAGE /bin/bash -c 'dotnet build p3ops-demo-app/src/Server/Server.csproj && \
                     dotnet test p3ops-demo-app/tests/Domain.Tests/Domain.Tests.csproj'"
             }
