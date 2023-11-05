@@ -26,6 +26,7 @@ pipeline {
 
         stage('Build and Test in dotnet6-container') {
             steps {
+                        sh 'dotnet restore src/Server/Server.csproj'
                         sh 'docker exec dotnet6-container dotnet build src/Server/Server.csproj'
                         sh 'docker exec dotnet6-container dotnet test tests/Domain.Tests/Domain.Tests.csproj'
                     
@@ -35,6 +36,7 @@ pipeline {
         stage('Publish and start the test app if it works') {
             steps {
                 script { 
+
                     sh 'docker exec dotnet6-container dotnet publish src/Server/Server.csproj -c Release -o publish'
                     sh 'docker exec dotnet6-container bash -c "cd publish && dotnet Server.dll"'
                 }
