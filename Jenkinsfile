@@ -8,29 +8,31 @@ pipeline {
             }
         }
 
-        stage('Build and Test in dotnetTEST-container') {
-            environment {
-                DOTNET_IMAGE = 'mcr.microsoft.com/dotnet/sdk:6.0'
-            }
+        stage('Build and Test in dotnet6-container') {
             steps {
-                sh "docker run --rm --name dotnetTEST-container \
-                    -v /var/run/docker.sock:/var/run/docker.sock \
-                    -v \$(which docker):/usr/bin/docker \
-                    -v \${PWD}:/workspace -w /workspace \
-                    -v /var/jenkins_home/workspace/Testing/p3ops-demo-app:/workspace/p3ops-demo-app \
-                    $DOTNET_IMAGE /bin/bash -c 'dotnet build p3ops-demo-app/src/Server/Server.csproj && \
-                    dotnet test p3ops-demo-app/tests/Domain.Tests/Domain.Tests.csproj'"
+                script {
+                    // Execute build and test commands in the existing dotnet6-container
+                    docker.image('dotnet6-container').inside {
+                        sh 'dotnet build p3ops-demo-app/src/Server/Server.csproj'
+                        sh 'dotnet test p3ops-demo-app/tests/Domain.Tests/Domain.Tests.csproj'
+                    }
+                }
             }
         }
 
         stage('Deploy to Test Environment') {
             steps {
-                sh 'docker stop sportstore-container || true'
-                sh 'docker rm sportstore-container || true'
-                sh 'docker run -d --name sportstore-container \
-                    -e DOTNET_ENVIRONMENT=Production \
-                    -e DOTNET_ConnectionStrings__SqlDatabase="Server=sql-server-container;Database=SportStore;User Id=SA;Password=AVeryComplex123Password;MultipleActiveResultSets=true" \
-                    dotnetTEST-container'
+                script {
+                    // Stop and remove previous container if it exists
+                    sh 'docker stop sportstore-container || true'
+                    sh 'docker rm sportstore-container || true'
+
+                    // Run the existing SportStore .NET app container
+                    sh 'docker run -d --name sportstore-container \
+                        -e DOTNET_ENVIRONMENT=Production \
+                        -e DOTNET_ConnectionStrings__SqlDatabase="Server=sql-server-container;Database=SportStore;User Id=SA;Password=AVeryComplex123Password;MultipleActiveResultSets=true" \
+                        dotnet6-container'
+                }
             }
         }
     }
