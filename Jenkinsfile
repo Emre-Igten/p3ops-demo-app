@@ -2,6 +2,12 @@ pipeline {
     agent any
 
     stages {
+
+        stage('Delete REPO') {
+            steps {
+                sh 'if [ -d "/var/jenkins_home/workspace/Testing/" ]; then rm -Rf /var/jenkins_home/workspace/Testing/; fi'
+            }
+        }        
         stage('Git Checkout') {
             steps {
                 sh 'git clone https://github.com/Emre-Igten/p3ops-demo-app.git'
@@ -17,11 +23,6 @@ pipeline {
             }
         }
 
-        stage('Delete REPO') {
-            steps {
-                sh 'if [ -d "/var/jenkins_home/workspace/Testing/" ]; then rm -Rf /var/jenkins_home/workspace/Testing/; fi'
-            }
-        }
 
         stage('Build and Test in dotnet6-container') {
             steps {
