@@ -18,7 +18,7 @@ pipeline {
                     -v \$(which docker):/usr/bin/docker \
                     -v \${PWD}:/workspace -w /workspace \
                     $DOTNET_IMAGE /bin/bash -c 'dotnet build p3ops-demo-app/src/Server/Server.csproj && \
-                    dotnet test p3ops-demo-app/tests/Domain/Domain.csproj'"
+                    dotnet test p3ops-demo-app/tests/Domain.Tests/Domain.Tests.csproj'"
             }
         }
 
