@@ -4,14 +4,17 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Emre-Igten/p3ops-demo-app.git'
+                script {
+                    // Cloning the repository in dotnet6-container
+                    sh 'docker exec dotnet6-container git clone https://github.com/Emre-Igten/p3ops-demo-app.git'
+                }
             }
         }
 
         stage('Build and Test') {
             steps {
                 script {
-                    // Build .NET solution in existing dotnet6-container
+                    // Execute build and test commands in existing dotnet6-container
                     sh 'docker exec dotnet6-container dotnet build src/Server/Server.csproj'
                     sh 'docker exec dotnet6-container dotnet test tests/Domain/Domain.csproj'
                 }
@@ -21,7 +24,7 @@ pipeline {
         stage('Deploy to Test Environment') {
             steps {
                 script {
-                    // Stop and remove previous container if exists
+                    // Stop and remove previous container if it exists
                     sh 'docker stop sportstore-container || true'
                     sh 'docker rm sportstore-container || true'
 
