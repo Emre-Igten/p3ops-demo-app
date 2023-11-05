@@ -14,6 +14,14 @@ pipeline {
         //         }
         //     }
         // }        
+        stage('Copy files to dotnet6-container') {
+            steps {
+                script {
+                    // Copy a file
+                    sh 'docker cp /var/jenkins_home/workspace/Testing/p3ops-demo-app dotnet6-container:/root/'
+                }
+            }
+        }
 
         stage('Build and Test in dotnet6-container') {
             steps {
