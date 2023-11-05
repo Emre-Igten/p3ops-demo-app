@@ -8,6 +8,15 @@ pipeline {
             }
         }
 
+    stages {
+        stage('Pull Dotnet Image') {
+            steps {
+                script {
+                    sh 'docker pull mcr.microsoft.com/dotnet/sdk:6.0'
+                }
+            }
+        }        
+
         stage('Build and Test in dotnet6-container') {
             steps {
                 script {
@@ -36,4 +45,6 @@ pipeline {
             }
         }
     }
+}
+
 }
