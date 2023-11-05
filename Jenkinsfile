@@ -8,12 +8,12 @@ pipeline {
             }
         }
 
-        stage('Build and Test in dotnet6-container') {
+        stage('Build and Test in dotnetTEST-container') {
             environment {
                 DOTNET_IMAGE = 'mcr.microsoft.com/dotnet/sdk:6.0'
             }
             steps {
-                sh "docker run --rm --name dotnet6-container \
+                sh "docker run --rm --name dotnetTEST-container \
                     -v /var/run/docker.sock:/var/run/docker.sock \
                     -v \$(which docker):/usr/bin/docker \
                     -v \${PWD}:/workspace -w /workspace \
@@ -29,7 +29,7 @@ pipeline {
                 sh 'docker run -d --name sportstore-container \
                     -e DOTNET_ENVIRONMENT=Production \
                     -e DOTNET_ConnectionStrings__SqlDatabase="Server=sql-server-container;Database=SportStore;User Id=SA;Password=AVeryComplex123Password;MultipleActiveResultSets=true" \
-                    dotnet6-container'
+                    dotnetTEST-container'
             }
         }
     }
