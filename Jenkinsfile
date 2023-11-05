@@ -31,19 +31,11 @@ pipeline {
                 }
             }
         
-
-        stage('Deploy to Test Environment') {
+        stage('Publish and start the test app if it works') {
             steps {
-                script {
-                    // Stop and remove previous container if it exists
-                    sh 'docker stop sportstore-container || true'
-                    sh 'docker rm sportstore-container || true'
-
-                    // Run the existing SportStore .NET app container
-                    sh 'docker run -d --name sportstore-container \
-                        -e DOTNET_ENVIRONMENT=Production \
-                        -e DOTNET_ConnectionStrings__SqlDatabase="Server=sql-server-container;Database=SportStore;User Id=SA;Password=AVeryComplex123Password;MultipleActiveResultSets=true" \
-                        dotnet6-container'
+                script { 
+                    sh 'docker exec dotnet6-container dotnet publish src/Server/Server.csproj -c Release -o publish'
+                    sh 'docker exec dotnet6-container bash -c "cd publish && dotnet Server.dll"'
                 }
             }
         }
