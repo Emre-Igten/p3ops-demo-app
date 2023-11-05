@@ -11,11 +11,9 @@ pipeline {
         stage('Build and Test') {
             steps {
                 script {
-                    // Build .NET solution
-                    sh 'dotnet build src/Server/Server.csproj'
-
-                    // Run unit tests for the domain
-                    sh 'dotnet test tests/Domain/Domain.csproj'
+                    // Build .NET solution in existing dotnet6-container
+                    sh 'docker exec dotnet6-container dotnet build src/Server/Server.csproj'
+                    sh 'docker exec dotnet6-container dotnet test tests/Domain/Domain.csproj'
                 }
             }
         }
