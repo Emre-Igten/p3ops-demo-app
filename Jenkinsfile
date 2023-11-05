@@ -17,6 +17,12 @@ pipeline {
             }
         }
 
+        stage('Delete REPO') {
+            steps {
+                sh 'if [ -d "/var/jenkins_home/workspace/Testing/" ]; then rm -Rf /var/jenkins_home/workspace/Testing/; fi'
+            }
+        }
+
         stage('Build and Test in dotnet6-container') {
             steps {
                         sh 'docker exec dotnet6-container dotnet build src/Server/Server.csproj'
