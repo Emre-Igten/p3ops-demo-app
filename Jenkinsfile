@@ -17,8 +17,8 @@ pipeline {
 
         stage('Build and Test in dotnet6-container') {
             steps {
-                        sh 'docker exec -it dotnet6-container dotnet build p3ops-demo-app/src/Server/Server.csproj'
-                        sh 'docker exec -it dotnet6-container dotnet test p3ops-demo-app/tests/Domain.Tests/Domain.Tests.csproj'
+                        sh 'docker exec dotnet6-container dotnet build p3ops-demo-app/src/Server/Server.csproj'
+                        sh 'docker exec dotnet6-container dotnet test p3ops-demo-app/tests/Domain.Tests/Domain.Tests.csproj'
                     
                 }
             }
