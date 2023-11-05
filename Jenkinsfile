@@ -7,8 +7,6 @@ pipeline {
                 sh 'git clone https://github.com/Emre-Igten/p3ops-demo-app.git'
             }
         }
-
-    stages {
         stage('Pull Dotnet Image') {
             steps {
                 script {
@@ -47,4 +45,4 @@ pipeline {
     }
 }
 
-}
+
