@@ -6,17 +6,21 @@ pipeline {
             steps {
                 script {
                     // Cloning the repository in dotnet6-container
-                    sh 'docker exec dotnet6-container git clone https://github.com/Emre-Igten/p3ops-demo-app.git'
+                    docker.image('mcr.microsoft.com/dotnet/sdk:6.0').inside('-u root') {
+                        sh 'git clone https://github.com/Emre-Igten/p3ops-demo-app.git'
+                    }
                 }
             }
         }
 
-        stage('Build and Test') {
+        stage('Build and Test in dotnet6-container') {
             steps {
                 script {
                     // Execute build and test commands in existing dotnet6-container
-                    sh 'docker exec dotnet6-container dotnet build src/Server/Server.csproj'
-                    sh 'docker exec dotnet6-container dotnet test tests/Domain/Domain.csproj'
+                    docker.image('mcr.microsoft.com/dotnet/sdk:6.0').inside {
+                        sh 'dotnet build p3ops-demo-app/src/Server/Server.csproj'
+                        sh 'dotnet test p3ops-demo-app/tests/Domain/Domain.csproj'
+                    }
                 }
             }
         }
@@ -25,6 +29,7 @@ pipeline {
             steps {
                 script {
                     // Stop and remove previous container if it exists
+                docker.image('mcr.microsoft.com/dotnet/sdk:6.0').inside {
                     sh 'docker stop sportstore-container || true'
                     sh 'docker rm sportstore-container || true'
 
