@@ -7,13 +7,7 @@ pipeline {
                 sh 'git clone https://github.com/Emre-Igten/p3ops-demo-app.git'
             }
         }
-        // stage('Pull Dotnet Image') {
-        //     steps {
-        //         script {
-        //             sh 'docker pull mcr.microsoft.com/dotnet/sdk:6.0'
-        //         }
-        //     }
-        // }        
+      
         stage('Copy files to dotnet6-container') {
             steps {
                 script {
