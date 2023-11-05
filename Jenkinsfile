@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     // Copy a file
-                    sh 'docker cp /var/jenkins_home/workspace/Testing/p3ops-demo-app dotnet6-container:/root/'
+                    sh 'docker cp /var/jenkins_home/workspace/Testing/p3ops-demo-app dotnet6-container:~'
                 }
             }
         }
