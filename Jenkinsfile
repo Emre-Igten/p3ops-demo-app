@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Git Checkout') {
             steps {
@@ -9,14 +9,11 @@ pipeline {
         }
 
         stage('Build and Test in dotnet6-container') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/dotnet/sdk:6.0'
-                }
+            environment {
+                DOTNET_IMAGE = 'mcr.microsoft.com/dotnet/sdk:6.0'
             }
             steps {
-                sh 'dotnet build p3ops-demo-app/src/Server/Server.csproj'
-                sh 'dotnet test p3ops-demo-app/tests/Domain/Domain.csproj'
+                sh "docker run --rm --name dotnet6-container -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -v $PWD:/workspace -w /workspace $DOTNET_IMAGE /bin/bash -c 'dotnet build p3ops-demo-app/src/Server/Server.csproj && dotnet test p3ops-demo-app/tests/Domain/Domain.csproj'"
             }
         }
 
